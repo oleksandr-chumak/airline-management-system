@@ -3,6 +3,7 @@ import { DataSource, Repository } from 'typeorm';
 import { Flight } from '../entities/Flight';
 import { CreateFlightDto } from './dto/create-flight.dto';
 import { UpdateFlightDto } from './dto/update-flight.dto';
+import { BatchUpdateFlightItemDto } from './dto/batch-update-flight.dto';
 
 @Injectable()
 export class FlightsService {
@@ -44,5 +45,32 @@ export class FlightsService {
   async remove(id: number): Promise<void> {
     const flight = await this.findOne(id);
     await this.flightRepository.remove(flight);
+  }
+
+  async batchUpdate(updates: BatchUpdateFlightItemDto[]): Promise<Flight[]> {
+    const updatedFlights: Flight[] = [];
+
+    await this.dataSource.transaction(async (transactionalEntityManager) => {
+      for (const updateItem of updates) {
+        const { flightId, ...updateData } = updateItem;
+
+        const flight = await transactionalEntityManager.findOne(Flight, {
+          where: { flightId },
+        });
+
+        if (!flight) {
+          throw new NotFoundException(`Flight with ID ${flightId} not found`);
+        }
+
+        Object.assign(flight, updateData);
+        const savedFlight = await transactionalEntityManager.save(
+          Flight,
+          flight,
+        );
+        updatedFlights.push(savedFlight);
+      }
+    });
+
+    return updatedFlights;
   }
 }

@@ -8,7 +8,7 @@ interface Props {
 export function TableNavigationComponent({ selectedValue }: Props) {
   return (
     <Tabs value={selectedValue} role="navigation" sx={{ paddingBottom: 2 }}>
-      <MuiLinkTabComponent value="flights" label="FlightsPage" href="/tables/flights" />
+      <MuiLinkTabComponent value="flights" label="Flights" href="/tables/flights" />
       <MuiLinkTabComponent value="passengers" label="Passengers" href="/tables/passengers" />
       <MuiLinkTabComponent value="tickets" label="Tickets" href="/tables/tickets" />
       <MuiLinkTabComponent value="audits" label="Audits" href="/tables/audits" />

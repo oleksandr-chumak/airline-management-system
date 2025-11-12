@@ -13,6 +13,7 @@ import {
 import { FlightsService } from './flights.service';
 import { CreateFlightDto } from './dto/create-flight.dto';
 import { UpdateFlightDto } from './dto/update-flight.dto';
+import { BatchUpdateFlightsDto } from './dto/batch-update-flight.dto';
 import { Flight } from '../entities/Flight';
 
 @Controller('flights')
@@ -33,6 +34,14 @@ export class FlightsController {
   @Get(':id')
   async findOne(@Param('id', ParseIntPipe) id: number): Promise<Flight> {
     return await this.flightsService.findOne(id);
+  }
+
+  @Put('batch')
+  @HttpCode(HttpStatus.OK)
+  async batchUpdate(
+    @Body() batchUpdateDto: BatchUpdateFlightsDto,
+  ): Promise<Flight[]> {
+    return await this.flightsService.batchUpdate(batchUpdateDto.flights);
   }
 
   @Put(':id')

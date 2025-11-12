@@ -1,7 +1,7 @@
 import { Routes, Route, Navigate } from 'react-router-dom'
 import RootLayoutComponent from './components/root-layout.component.tsx'
-import HomePage from './pages/home.page.tsx'
-import FlightsPage from '@/pages/tables/flights.page.tsx'
+import { HomePage } from './pages/home.page.tsx'
+import { FlightsPage } from '@/pages/tables/flights.page.tsx'
 
 function App() {
   return (
