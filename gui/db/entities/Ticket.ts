@@ -25,11 +25,11 @@ export class Ticket {
   @Column({ name: 'PRICE' })
   price: number;
 
-  @ManyToOne('FLIGHTS', (flight) => flight.tickets)
+  @ManyToOne('FLIGHTS', (flight: Flight) => flight.tickets)
   @JoinColumn({ name: 'flight_id' })
   flight: Flight;
 
-  @ManyToOne('PASSENGERS', (passenger) => passenger.tickets)
+  @ManyToOne('PASSENGERS', (passenger: Passenger) => passenger.tickets)
   @JoinColumn({ name: 'passenger_id' })
   passenger: Passenger;
 }

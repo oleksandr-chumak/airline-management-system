@@ -1,6 +1,6 @@
 import { NextResponse } from 'next/server';
-import { getDataSource } from '../../../db/db';
-import { Flight } from '../../../db/entities/Flight';
+import { getDataSource } from '@/db/data-source';
+import { Flight } from '@/db/entities/Flight';
 
 export async function GET() {
   try {

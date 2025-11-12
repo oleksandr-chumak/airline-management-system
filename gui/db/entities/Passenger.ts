@@ -18,6 +18,6 @@ export class Passenger {
   @Column({ name: 'PHONE_NUMBER'})
   phoneNumber: string;
 
-  @OneToMany('TICKETS', (ticket) => ticket.passenger)
+  @OneToMany('TICKETS', (ticket: Ticket) => ticket.passenger)
   tickets: Ticket[];
 }

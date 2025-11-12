@@ -27,6 +27,6 @@ export class Flight {
   @Column({ name: 'CAPACITY' })
   capacity: number;
 
-  @OneToMany('TICKETS', (ticket) => ticket.flight)
+  @OneToMany('TICKETS', (ticket: Ticket) => ticket.flight)
   tickets: Ticket[];
 }
