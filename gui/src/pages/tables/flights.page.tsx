@@ -1,5 +1,6 @@
 import {useState} from 'react'
 import {TableNavigationComponent} from '@/pages/tables/components/table-navigation.component.tsx'
+import {CreateFlightModal} from '@/pages/tables/components/create-flight-modal.component.tsx'
 import {AgGridReact} from 'ag-grid-react'
 import {ColDef, CellValueChangedEvent} from 'ag-grid-community'
 import {useQuery, useQueryClient, useMutation} from '@tanstack/react-query'
@@ -14,14 +15,21 @@ export function FlightsPage() {
   const {data} = useQuery<Flight[]>({
     queryKey: ['flights'],
     queryFn: async () => {
-      const flights = await axios.get<Flight[]>('http://localhost:5000/flights')
-      setUnpersistedData(flights.data);
+      const res = await axios.get<Flight[]>('http://localhost:5000/flights')
+      const flights = res.data.map((f) => ({
+        ...f,
+        departureTime: new Date(f.departureTime),
+        arrivalTime: new Date(f.arrivalTime)
+      }))
+
+      setUnpersistedData(flights);
       setIsEditing(false);
-      return flights.data;
+      return flights;
     },
   })
 
   const [isEditing, setIsEditing] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const [unpersistedData, setUnpersistedData] = useState<Flight[]>([]);
 
   const persistDataMutation = useMutation({
@@ -37,11 +45,11 @@ export function FlightsPage() {
 
   const [colDefs] = useState<ColDef<Flight>[]>([
     {field: 'flightId', editable: false},
-    {field: 'flightNumber'},
+    {field: 'flightNumber' },
     {field: 'origin'},
     {field: 'destination'},
-    {field: 'departureTime'},
-    {field: 'arrivalTime'},
+    {field: 'departureTime', cellDataType: "dateTime" },
+    {field: 'arrivalTime', cellDataType: "dateTime" },
     {field: 'airplaneModel'},
     {field: 'capacity'},
   ])
@@ -58,7 +66,9 @@ export function FlightsPage() {
       <TableNavigationComponent selectedValue="flights"/>
       <div className="p-6 rounded-3xl bg-white w-full flex flex-col gap-4">
         <div className="flex justify-end gap-2">
-          <Button color="primary" variant="contained">Create new flight</Button>
+          <Button color="primary" variant="contained" onClick={() => setIsModalOpen(true)}>
+            Create new flight
+          </Button>
           <Button
             color="primary"
             variant="contained"
@@ -78,6 +88,11 @@ export function FlightsPage() {
           />
         </div>
       </div>
+      <CreateFlightModal
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={() => setIsModalOpen(false)}
+      />
     </>
   )
 }
