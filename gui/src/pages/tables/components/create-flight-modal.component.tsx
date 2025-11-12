@@ -9,6 +9,7 @@ import {
 import { useForm } from 'react-hook-form';
 import { useQueryClient, useMutation } from '@tanstack/react-query';
 import axios from "axios";
+import { toast } from 'react-toastify';
 
 import { Flight } from '@/models';
 
@@ -63,7 +64,11 @@ export function CreateFlightModal({ open, onClose, onSuccess }: CreateFlightModa
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["flights"] });
       reset();
+      toast.success('Flight created successfully');
       onSuccess();
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || 'Failed to create flight');
     },
   });
 

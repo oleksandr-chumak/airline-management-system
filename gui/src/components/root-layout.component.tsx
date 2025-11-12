@@ -24,7 +24,7 @@ export default function RootLayoutComponent() {
 
   return (
     <div>
-      <AppBar position="fixed" sx={{ zIndex: 10000 }}>
+      <AppBar position="fixed" sx={{ zIndex: 1201 }}>
         <Toolbar>
           <Typography variant="h4" component="h1">
             Flight Management System

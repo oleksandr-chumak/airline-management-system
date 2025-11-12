@@ -1,12 +1,14 @@
-import {useState} from 'react'
+import {useState, useMemo} from 'react'
 import {TableNavigationComponent} from '@/pages/tables/components/table-navigation.component.tsx'
 import {CreateFlightModal} from '@/pages/tables/components/create-flight-modal.component.tsx'
+import {DeleteButtonCellRenderer} from '@/components/delete-button-cell-renderer.component.tsx'
 import {AgGridReact} from 'ag-grid-react'
 import {ColDef, CellValueChangedEvent} from 'ag-grid-community'
 import {useQuery, useQueryClient, useMutation} from '@tanstack/react-query'
 import {Flight} from '@/models'
 import Button from "@mui/material/Button"
-import axios from "axios";
+import axios from "axios"
+import { toast } from 'react-toastify'
 
 const defaultColDef: ColDef = {editable: true}
 
@@ -40,10 +42,31 @@ export function FlightsPage() {
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["flights"] });
       setIsEditing(false);
+      toast.success('Flights updated successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || 'Failed to update flights');
     },
   });
 
-  const [colDefs] = useState<ColDef<Flight>[]>([
+  const deleteFlightMutation = useMutation({
+    mutationFn: async (flightId: number) => {
+      await axios.delete(`http://localhost:5000/flights/${flightId}`);
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["flights"] });
+      toast.success('Flight deleted successfully');
+    },
+    onError: (error: any) => {
+      toast.error(error?.response?.data?.message || 'Failed to delete flight');
+    },
+  });
+
+  const handleDelete = (flightId: number) => {
+    deleteFlightMutation.mutate(flightId);
+  };
+
+  const colDefs = useMemo<ColDef[]>(() => [
     {field: 'flightId', editable: false},
     {field: 'flightNumber' },
     {field: 'origin'},
@@ -52,7 +75,19 @@ export function FlightsPage() {
     {field: 'arrivalTime', cellDataType: "dateTime" },
     {field: 'airplaneModel'},
     {field: 'capacity'},
-  ])
+    {
+      headerName: 'Actions',
+      field: 'actions',
+      editable: false,
+      cellRenderer: DeleteButtonCellRenderer,
+      cellRendererParams: {
+        onDelete: handleDelete,
+        idField: 'flightId',
+        isDeleting: deleteFlightMutation.isPending,
+      },
+      width: 100,
+    },
+  ], [deleteFlightMutation.isPending]);
 
   const handleCellValueChange = (e: CellValueChangedEvent<Flight>) => {
     setUnpersistedData((data) => data.map((flight) => {
