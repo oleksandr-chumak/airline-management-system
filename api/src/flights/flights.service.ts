@@ -1,6 +1,6 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
 import { DataSource, Repository } from 'typeorm';
-import { Flight } from '../entities/Flight';
+import { Flight } from './Flight';
 import { CreateFlightDto } from './dto/create-flight.dto';
 import { UpdateFlightDto } from './dto/update-flight.dto';
 import { BatchUpdateFlightItemDto } from './dto/batch-update-flight.dto';

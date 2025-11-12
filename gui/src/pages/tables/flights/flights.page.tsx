@@ -1,13 +1,13 @@
 import {useState, useMemo, useEffect} from 'react'
-import {TableNavigationComponent} from '@/pages/tables/components/table-navigation.component.tsx'
-import {CreateFlightModal} from '@/pages/tables/components/create-flight-modal.component.tsx'
+import {TableNavigationComponent} from '../components/table-navigation.component.tsx'
+import {CreateFlightModal} from './components/create-flight-modal.component.tsx'
 import {DeleteButtonCellRenderer} from '@/components/delete-button-cell-renderer.component.tsx'
 import {AgGridReact} from 'ag-grid-react'
 import {ColDef, CellValueChangedEvent} from 'ag-grid-community'
 import {Flight} from '@/models'
 import Button from "@mui/material/Button"
-import {useFlightsQuery} from '@/pages/tables/hooks/use-flights-query.hook'
-import {useUpdateFlightsMutation, useDeleteFlightMutation} from '@/pages/tables/hooks/use-flight-mutations.hook'
+import {useFlightsQuery} from './hooks/use-flights-query.hook'
+import {useUpdateFlightsMutation, useDeleteFlightMutation} from './hooks/use-flight-mutations.hook'
 
 const defaultColDef: ColDef = {editable: true}
 

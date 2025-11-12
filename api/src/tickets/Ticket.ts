@@ -1,6 +1,12 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, JoinColumn } from 'typeorm';
-import { type Flight } from './Flight';
-import { type Passenger } from './Passenger';
+import {
+  Entity,
+  PrimaryGeneratedColumn,
+  Column,
+  ManyToOne,
+  JoinColumn,
+} from 'typeorm';
+import { type Flight } from '../flights/Flight';
+import { type Passenger } from '../entities/Passenger';
 
 @Entity('TICKETS')
 export class Ticket {
@@ -26,10 +32,10 @@ export class Ticket {
   price: number;
 
   @ManyToOne('FLIGHTS', (flight: Flight) => flight.tickets)
-  @JoinColumn({ name: 'flight_id' })
+  @JoinColumn({ name: 'FLIGHT_ID' })
   flight: Flight;
 
   @ManyToOne('PASSENGERS', (passenger: Passenger) => passenger.tickets)
-  @JoinColumn({ name: 'passenger_id' })
+  @JoinColumn({ name: 'PASSENGER_ID' })
   passenger: Passenger;
 }

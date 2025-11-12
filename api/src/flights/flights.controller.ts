@@ -14,7 +14,7 @@ import { FlightsService } from './flights.service';
 import { CreateFlightDto } from './dto/create-flight.dto';
 import { UpdateFlightDto } from './dto/update-flight.dto';
 import { BatchUpdateFlightsDto } from './dto/batch-update-flight.dto';
-import { Flight } from '../entities/Flight';
+import { Flight } from './Flight';
 
 @Controller('flights')
 export class FlightsController {

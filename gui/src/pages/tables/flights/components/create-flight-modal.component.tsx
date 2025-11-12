@@ -7,7 +7,7 @@ import {
   TextField,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
-import { useCreateFlightMutation, CreateFlightData } from '@/pages/tables/hooks/use-flight-mutations.hook';
+import { useCreateFlightMutation, CreateFlightData } from '../hooks/use-flight-mutations.hook';
 
 interface CreateFlightModalProps {
   open: boolean;
