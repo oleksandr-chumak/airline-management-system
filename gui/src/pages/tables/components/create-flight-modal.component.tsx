@@ -7,26 +7,12 @@ import {
   TextField,
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
-import { useQueryClient, useMutation } from '@tanstack/react-query';
-import axios from "axios";
-import { toast } from 'react-toastify';
-
-import { Flight } from '@/models';
+import { useCreateFlightMutation, CreateFlightData } from '@/pages/tables/hooks/use-flight-mutations.hook';
 
 interface CreateFlightModalProps {
   open: boolean;
   onClose: () => void;
   onSuccess: () => void;
-}
-
-interface CreateFlightData {
-  flightNumber: string;
-  origin: string;
-  destination: string;
-  departureTime: string;
-  arrivalTime: string;
-  airplaneModel: string;
-  capacity: number;
 }
 
 const modalStyle = {
@@ -42,7 +28,7 @@ const modalStyle = {
 };
 
 export function CreateFlightModal({ open, onClose, onSuccess }: CreateFlightModalProps) {
-  const queryClient = useQueryClient();
+  const createFlightMutation = useCreateFlightMutation();
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<CreateFlightData>({
     defaultValues: {
@@ -56,24 +42,13 @@ export function CreateFlightModal({ open, onClose, onSuccess }: CreateFlightModa
     }
   });
 
-  const createFlightMutation = useMutation({
-    mutationFn: async (flightData: CreateFlightData) => {
-      const response = await axios.post<Flight>('http://localhost:5000/flights', flightData);
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["flights"] });
-      reset();
-      toast.success('Flight created successfully');
-      onSuccess();
-    },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || 'Failed to create flight');
-    },
-  });
-
   const onSubmit = (data: CreateFlightData) => {
-    createFlightMutation.mutate(data);
+    createFlightMutation.mutate(data, {
+      onSuccess: () => {
+        reset();
+        onSuccess();
+      },
+    });
   };
 
   const handleClose = () => {

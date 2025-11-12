@@ -1,69 +1,36 @@
-import {useState, useMemo} from 'react'
+import {useState, useMemo, useEffect} from 'react'
 import {TableNavigationComponent} from '@/pages/tables/components/table-navigation.component.tsx'
 import {CreateFlightModal} from '@/pages/tables/components/create-flight-modal.component.tsx'
 import {DeleteButtonCellRenderer} from '@/components/delete-button-cell-renderer.component.tsx'
 import {AgGridReact} from 'ag-grid-react'
 import {ColDef, CellValueChangedEvent} from 'ag-grid-community'
-import {useQuery, useQueryClient, useMutation} from '@tanstack/react-query'
 import {Flight} from '@/models'
 import Button from "@mui/material/Button"
-import axios from "axios"
-import { toast } from 'react-toastify'
+import {useFlightsQuery} from '@/pages/tables/hooks/use-flights-query.hook'
+import {useUpdateFlightsMutation, useDeleteFlightMutation} from '@/pages/tables/hooks/use-flight-mutations.hook'
 
 const defaultColDef: ColDef = {editable: true}
 
 export function FlightsPage() {
-  const queryClient = useQueryClient();
-  const {data} = useQuery<Flight[]>({
-    queryKey: ['flights'],
-    queryFn: async () => {
-      const res = await axios.get<Flight[]>('http://localhost:5000/flights')
-      const flights = res.data.map((f) => ({
-        ...f,
-        departureTime: new Date(f.departureTime),
-        arrivalTime: new Date(f.arrivalTime)
-      }))
-
-      setUnpersistedData(flights);
-      setIsEditing(false);
-      return flights;
-    },
-  })
+  const { data } = useFlightsQuery();
+  const updateFlightsMutation = useUpdateFlightsMutation();
+  const deleteFlightMutation = useDeleteFlightMutation();
 
   const [isEditing, setIsEditing] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [unpersistedData, setUnpersistedData] = useState<Flight[]>([]);
 
-  const persistDataMutation = useMutation({
-    mutationFn: async (flights: Flight[]) => {
-      const response = await axios.put<Flight[]>('http://localhost:5000/flights/batch', { flights })
-      return response.data;
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["flights"] });
+  useEffect(() => {
+    if (data) {
+      setUnpersistedData(data);
       setIsEditing(false);
-      toast.success('Flights updated successfully');
-    },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || 'Failed to update flights');
-    },
-  });
+    }
+  }, [data]);
 
-  const deleteFlightMutation = useMutation({
-    mutationFn: async (flightId: number) => {
-      await axios.delete(`http://localhost:5000/flights/${flightId}`);
-    },
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["flights"] });
-      toast.success('Flight deleted successfully');
-    },
-    onError: (error: any) => {
-      toast.error(error?.response?.data?.message || 'Failed to delete flight');
-    },
-  });
-
-  const handleDelete = (flightId: number) => {
-    deleteFlightMutation.mutate(flightId);
+  const handlePersistChanges = () => {
+    updateFlightsMutation.mutate(unpersistedData, {
+      onSuccess: () => setIsEditing(false)
+    });
   };
 
   const colDefs = useMemo<ColDef[]>(() => [
@@ -81,7 +48,7 @@ export function FlightsPage() {
       editable: false,
       cellRenderer: DeleteButtonCellRenderer,
       cellRendererParams: {
-        onDelete: handleDelete,
+        onDelete: (flightId: number) => deleteFlightMutation.mutate(flightId),
         idField: 'flightId',
         isDeleting: deleteFlightMutation.isPending,
       },
@@ -108,8 +75,8 @@ export function FlightsPage() {
             color="primary"
             variant="contained"
             disabled={!isEditing}
-            onClick={() => persistDataMutation.mutate(unpersistedData)}
-            loading={persistDataMutation.isPending}
+            onClick={handlePersistChanges}
+            loading={updateFlightsMutation.isPending}
           >
             Persist changes
           </Button>
