@@ -6,7 +6,7 @@ import {
   JoinColumn,
 } from 'typeorm';
 import { type Flight } from '../flights/Flight';
-import { type Passenger } from '../entities/Passenger';
+import { type Passenger } from '../passengers/Passenger';
 
 @Entity('TICKETS')
 export class Ticket {

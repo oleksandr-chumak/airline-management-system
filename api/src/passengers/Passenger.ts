@@ -4,7 +4,7 @@ import { type Ticket } from '../tickets/Ticket';
 @Entity('PASSENGERS')
 export class Passenger {
   @PrimaryGeneratedColumn({ name: 'PASSENGER_ID' })
-  passenger_id: number;
+  passengerId: number;
 
   @Column({ name: 'FIRST_NAME' })
   firstName: string;

@@ -1,7 +1,7 @@
 import { Global, Module } from '@nestjs/common';
 import { DataSource } from 'typeorm';
 import { Flight } from '../flights/Flight';
-import { Passenger } from '../entities/Passenger';
+import { Passenger } from '../passengers/Passenger';
 import { Ticket } from '../tickets/Ticket';
 import { Audit } from '../entities/Audit';
 import { TicketDescription } from '../entities/TicketDescription';
