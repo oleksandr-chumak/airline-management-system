@@ -8,11 +8,13 @@ import {Ticket} from '@/models'
 import Button from "@mui/material/Button"
 import {useTicketsQuery} from './hooks/use-tickets-query.hook'
 import {useUpdateTicketsMutation, useDeleteTicketMutation} from './hooks/use-ticket-mutations.hook'
+import {useFlightsQuery} from '../flights/hooks/use-flights-query.hook'
 
 const defaultColDef: ColDef = {editable: true}
 
 export function TicketsPage() {
   const { data } = useTicketsQuery();
+  const { data: flights } = useFlightsQuery();
   const updateTicketsMutation = useUpdateTicketsMutation();
   const deleteTicketMutation = useDeleteTicketMutation();
 
@@ -35,7 +37,17 @@ export function TicketsPage() {
 
   const colDefs = useMemo<ColDef[]>(() => [
     {field: 'ticketId', editable: false},
-    {field: 'flightId' },
+    {
+      field: 'flightId',
+      cellEditor: 'agSelectCellEditor',
+      cellEditorParams: {
+        values: flights?.map(f => f.flightId) || [],
+      },
+      valueFormatter: (params) => {
+        const flight = flights?.find(f => f.flightId === params.value);
+        return flight ? `${flight.flightNumber} (${flight.origin} → ${flight.destination})` : params.value;
+      },
+    },
     {field: 'passengerId'},
     {field: 'seatNumber'},
     {field: 'status'},
@@ -53,7 +65,7 @@ export function TicketsPage() {
       },
       width: 100,
     },
-  ], [deleteTicketMutation.isPending]);
+  ], [deleteTicketMutation.isPending, flights]);
 
   const handleCellValueChange = (e: CellValueChangedEvent<Ticket>) => {
     setUnpersistedData((data) => data.map((ticket) => {

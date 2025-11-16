@@ -64,7 +64,25 @@ export class TicketsService {
           throw new NotFoundException(`Ticket with ID ${ticketId} not found`);
         }
 
-        Object.assign(ticket, updateData);
+        if (updateData.flightId !== undefined) {
+          ticket.flightId = updateData.flightId;
+        }
+        if (updateData.passengerId !== undefined) {
+          ticket.passengerId = updateData.passengerId;
+        }
+        if (updateData.seatNumber !== undefined) {
+          ticket.seatNumber = updateData.seatNumber;
+        }
+        if (updateData.status !== undefined) {
+          ticket.status = updateData.status;
+        }
+        if (updateData.purchaseDate !== undefined) {
+          ticket.purchaseDate = updateData.purchaseDate;
+        }
+        if (updateData.price !== undefined) {
+          ticket.price = updateData.price;
+        }
+
         const savedTicket = await transactionalEntityManager.save(
           Ticket,
           ticket,
