@@ -5,6 +5,8 @@ import { DatabaseModule } from './common/database.module';
 import { PassengersModule } from './passengers/passengers.module';
 import { TicketDescriptionsModule } from './ticket-descriptions/ticket-descriptions.module';
 import { AuditsModule } from './audits/audits.module';
+import { ProceduresModule } from './procedures/procedures.module';
+import { FunctionsModule } from './functions/functions.module';
 
 @Module({
   imports: [
@@ -14,6 +16,8 @@ import { AuditsModule } from './audits/audits.module';
     TicketsModule,
     AuditsModule,
     TicketDescriptionsModule,
+    ProceduresModule,
+    FunctionsModule
   ],
 })
 export class AppModule {}
