@@ -9,12 +9,14 @@ import Button from "@mui/material/Button"
 import {useTicketsQuery} from './hooks/use-tickets-query.hook'
 import {useUpdateTicketsMutation, useDeleteTicketMutation} from './hooks/use-ticket-mutations.hook'
 import {useFlightsQuery} from '../flights/hooks/use-flights-query.hook'
+import {usePassengersQuery} from '../passengers/hooks/use-passengers-query.hook'
 
 const defaultColDef: ColDef = {editable: true}
 
 export function TicketsPage() {
   const { data } = useTicketsQuery();
   const { data: flights } = useFlightsQuery();
+  const { data: passengers } = usePassengersQuery();
   const updateTicketsMutation = useUpdateTicketsMutation();
   const deleteTicketMutation = useDeleteTicketMutation();
 
@@ -48,9 +50,25 @@ export function TicketsPage() {
         return flight ? `${flight.flightNumber} (${flight.origin} → ${flight.destination})` : params.value;
       },
     },
-    {field: 'passengerId'},
+    {
+      field: 'passengerId',
+      cellEditor: 'agSelectCellEditor',
+      cellEditorParams: {
+        values: passengers?.map(p => p.passengerId) || [],
+      },
+      valueFormatter: (params) => {
+        const passenger = passengers?.find(p => p.passengerId === params.value);
+        return passenger ? `${passenger.firstName} ${passenger.lastName} (${passenger.email})` : params.value;
+      },
+    },
     {field: 'seatNumber'},
-    {field: 'status'},
+    {
+      field: 'status',
+      cellEditor: 'agSelectCellEditor',
+      cellEditorParams: {
+        values: ['CONFIRMED', 'PENDING', 'CANCELLED', 'CHECKED-IN'],
+      },
+    },
     {field: 'purchaseDate', cellDataType: "dateTime" },
     {field: 'price'},
     {
@@ -65,7 +83,7 @@ export function TicketsPage() {
       },
       width: 100,
     },
-  ], [deleteTicketMutation.isPending, flights]);
+  ], [deleteTicketMutation.isPending, flights, passengers]);
 
   const handleCellValueChange = (e: CellValueChangedEvent<Ticket>) => {
     setUnpersistedData((data) => data.map((ticket) => {

@@ -1,5 +1,5 @@
 import { Injectable, Inject, NotFoundException } from '@nestjs/common';
-import { DataSource, Repository } from 'typeorm';
+import { DataSource, In, Repository } from 'typeorm';
 import { Ticket } from './Ticket';
 import { CreateTicketDto } from './dto/create-ticket.dto';
 import { UpdateTicketDto } from './dto/update-ticket.dto';
@@ -51,6 +51,10 @@ export class TicketsService {
 
   async batchUpdate(updates: BatchUpdateTicketItemDto[]): Promise<Ticket[]> {
     const updatedTickets: Ticket[] = [];
+
+    this.ticketRepository.findBy({
+      ticketId: In(updates.map((update) => update.ticketId)),
+    });
 
     await this.dataSource.transaction(async (transactionalEntityManager) => {
       for (const updateItem of updates) {

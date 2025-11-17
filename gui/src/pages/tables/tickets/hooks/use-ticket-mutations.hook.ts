@@ -1,7 +1,7 @@
-import { useMutation, useQueryClient } from '@tanstack/react-query';
+import {useMutation, useQueryClient} from '@tanstack/react-query';
 import axios from 'axios';
-import { toast } from 'react-toastify';
-import { Ticket } from '@/models';
+import {toast} from 'react-toastify';
+import {Ticket} from '@/models';
 
 interface CreateTicketData {
   flightId: number;
@@ -21,7 +21,7 @@ export function useCreateTicketMutation() {
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tickets'] });
+      queryClient.invalidateQueries({queryKey: ['tickets']});
       toast.success('Ticket created successfully');
     },
     onError: (error: any) => {
@@ -35,11 +35,13 @@ export function useUpdateTicketsMutation() {
 
   return useMutation({
     mutationFn: async (tickets: Ticket[]) => {
-      const response = await axios.put<Ticket[]>('http://localhost:5000/tickets/batch', { tickets });
+      const response = await axios.put<Ticket[]>('http://localhost:5000/tickets/batch', {
+        tickets: tickets.map((t) => ({...t, flight: undefined, passenger: undefined}))
+      });
       return response.data;
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tickets'] });
+      queryClient.invalidateQueries({queryKey: ['tickets']});
       toast.success('Tickets updated successfully');
     },
     onError: (error: any) => {
@@ -56,7 +58,7 @@ export function useDeleteTicketMutation() {
       await axios.delete(`http://localhost:5000/tickets/${ticketId}`);
     },
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['tickets'] });
+      queryClient.invalidateQueries({queryKey: ['tickets']});
       toast.success('Ticket deleted successfully');
     },
     onError: (error: any) => {
@@ -65,4 +67,4 @@ export function useDeleteTicketMutation() {
   });
 }
 
-export type { CreateTicketData };
+export type {CreateTicketData};
