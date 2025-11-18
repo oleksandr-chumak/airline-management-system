@@ -1,4 +1,9 @@
-import { Injectable, Inject, NotFoundException } from '@nestjs/common';
+import {
+  Injectable,
+  Inject,
+  NotFoundException,
+  BadRequestException,
+} from '@nestjs/common';
 import { DataSource } from 'typeorm';
 
 @Injectable()
@@ -42,7 +47,7 @@ export class ProceduresService {
         throw new NotFoundException(`Ticket with ID ${ticketId} not found`);
       }
       if (error.message && error.message.includes('Discount not required')) {
-        throw new Error(
+        throw new BadRequestException(
           'Cannot update price: less than 10 tickets in the system',
         );
       }
