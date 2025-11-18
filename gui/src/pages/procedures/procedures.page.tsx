@@ -13,7 +13,7 @@ import { useForm } from 'react-hook-form';
 import { useMutation } from '@tanstack/react-query';
 import axios from 'axios';
 import { toast } from 'react-toastify';
-import { useTicketsQuery } from '../tickets/hooks/use-tickets-query.hook';
+import { useTicketsQuery } from '../tables/tickets/hooks/use-tickets-query.hook';
 
 interface UpdatePurchaseDateData {
   ticketId: number;

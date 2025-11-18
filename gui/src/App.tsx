@@ -6,7 +6,8 @@ import {AuditsPage} from "@/pages/tables/audits/audits.page";
 import {TicketDescriptionsPage} from "@/pages/tables/ticket-descriptions/ticket-descriptions.page";
 import {PassengersPage} from '@/pages/tables/passengers/passengers.page.tsx'
 import {TicketsPage} from '@/pages/tables/tickets/tickets.page.tsx'
-import {ProceduresPage} from '@/pages/tables/procedures/procedures.page.tsx'
+import {ProceduresPage} from '@/pages/procedures/procedures.page.tsx'
+import {FunctionsPage} from '@/pages/functions/functions.page.tsx'
 import {ToastContainer} from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
@@ -17,6 +18,7 @@ function App() {
         <Route path="/" element={<RootLayoutComponent/>}>
           <Route index element={<HomePage/>}/>
           <Route path="procedures" element={<ProceduresPage/>}/>
+          <Route path="functions" element={<FunctionsPage/>}/>
           <Route path="tables">
             <Route index element={<Navigate to="/tables/flights" replace/>}/>
             <Route path="flights" element={<FlightsPage/>}/>
