@@ -9,6 +9,8 @@ import {
 } from '@mui/material';
 import { useForm } from 'react-hook-form';
 import { useCreateTicketMutation, CreateTicketData } from '../hooks/use-ticket-mutations.hook';
+import { useFlightsQuery } from '../../flights/hooks/use-flights-query.hook';
+import { usePassengersQuery } from '../../passengers/hooks/use-passengers-query.hook';
 
 interface CreateTicketModalProps {
   open: boolean;
@@ -36,6 +38,8 @@ const statusOptions = [
 
 export function CreateTicketModal({ open, onClose, onSuccess }: CreateTicketModalProps) {
   const createTicketMutation = useCreateTicketMutation();
+  const { data: flights, isLoading: isLoadingFlights } = useFlightsQuery();
+  const { data: passengers, isLoading: isLoadingPassengers } = usePassengersQuery();
 
   const { register, handleSubmit, reset, formState: { errors } } = useForm<CreateTicketData>({
     defaultValues: {
@@ -79,28 +83,50 @@ export function CreateTicketModal({ open, onClose, onSuccess }: CreateTicketModa
             <div className="flex gap-4">
               <TextField
                 fullWidth
-                label="Flight ID"
-                type="number"
+                select
+                label="Flight"
+                defaultValue=""
                 {...register('flightId', {
-                  required: 'Flight ID is required',
-                  min: { value: 1, message: 'Flight ID must be at least 1' },
+                  required: 'Flight is required',
                   valueAsNumber: true
                 })}
                 error={!!errors.flightId}
                 helperText={errors.flightId?.message}
-              />
+                disabled={isLoadingFlights}
+              >
+                {isLoadingFlights ? (
+                  <MenuItem disabled>Loading flights...</MenuItem>
+                ) : (
+                  flights?.map((flight) => (
+                    <MenuItem key={flight.flightId} value={flight.flightId}>
+                      {flight.flightNumber} - {flight.origin} to {flight.destination}
+                    </MenuItem>
+                  ))
+                )}
+              </TextField>
               <TextField
                 fullWidth
-                label="Passenger ID"
-                type="number"
+                select
+                label="Passenger"
+                defaultValue=""
                 {...register('passengerId', {
-                  required: 'Passenger ID is required',
-                  min: { value: 1, message: 'Passenger ID must be at least 1' },
+                  required: 'Passenger is required',
                   valueAsNumber: true
                 })}
                 error={!!errors.passengerId}
                 helperText={errors.passengerId?.message}
-              />
+                disabled={isLoadingPassengers}
+              >
+                {isLoadingPassengers ? (
+                  <MenuItem disabled>Loading passengers...</MenuItem>
+                ) : (
+                  passengers?.map((passenger) => (
+                    <MenuItem key={passenger.passengerId} value={passenger.passengerId}>
+                      {passenger.firstName} {passenger.lastName} - {passenger.email}
+                    </MenuItem>
+                  ))
+                )}
+              </TextField>
             </div>
             <div className="flex gap-4">
               <TextField
